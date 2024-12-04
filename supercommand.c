@@ -28,33 +28,67 @@ void list_directory(const char *dirname);
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         // Handle command-line options
-        if (strcmp(argv[1], "-m") == 0 && argc >= 3) {
-            if (strcmp(argv[2], "file") == 0) {
-                // File operations from CLI
-                if (argc == 5 && strcmp(argv[3], "create") == 0) {
-                    create_file(argv[4]);
-                } else if (argc == 6 && strcmp(argv[3], "write") == 0) {
-                    write_file(argv[4], argv[5]);
-                } else if (argc == 5 && strcmp(argv[3], "read") == 0) {
-                    read_file(argv[4]);
-                } else if (argc == 5 && strcmp(argv[3], "delete") == 0) {
-                    delete_file(argv[4]);
-                } else {
-                    fprintf(stderr, "Invalid file operation or arguments.\n");
-                }
-            } else if (strcmp(argv[2], "directory") == 0) {
-                // Directory operations from CLI
-                if (argc == 5 && strcmp(argv[3], "create") == 0) {
-                    create_directory(argv[4]);
-                } else if (argc == 5 && strcmp(argv[3], "delete") == 0) {
-                    delete_directory(argv[4]);
-                } else if (argc == 5 && strcmp(argv[3], "list") == 0) {
-                    list_directory(argv[4]);
-                } else {
-                    fprintf(stderr, "Invalid directory operation or arguments.\n");
-                }
-            } else {
-                fprintf(stderr, "Invalid mode or sub-mode.\n");
+        if (strcmp(argv[1], "-m") == 0 && argc >= 4) {
+            int mode = atoi(argv[2]);  // Get the operation mode
+            switch (mode) {
+                case 1:  // File operations mode
+                    if (argc == 5) {
+                        int op = atoi(argv[3]);  // Get the file operation type
+                        const char *filename = argv[4];
+                        switch (op) {
+                            case 1:  // Create file
+                                create_file(filename);
+                                break;
+                            case 2:  // Write to file
+                                printf("Enter content to write: ");
+                                char content[256];
+                                scanf("%s", content);
+                                write_file(filename, content);
+                                break;
+                            case 3:  // Read file
+                                read_file(filename);
+                                break;
+                            case 4:  // Delete file
+                                delete_file(filename);
+                                break;
+                            default:
+                                fprintf(stderr, "Invalid file operation.\n");
+                        }
+                    } else {
+                        fprintf(stderr, "Invalid number of arguments for file operation.\n");
+                    }
+                    break;
+                case 2:  // Directory operations mode
+                    if (argc == 5) {
+                        int op = atoi(argv[3]);  // Get the directory operation type
+                        const char *dirname = argv[4];
+                        switch (op) {
+                            case 1:  // Create directory
+                                create_directory(dirname);
+                                break;
+                            case 2:  // Delete directory
+                                delete_directory(dirname);
+                                break;
+                            case 3:  // List directory contents
+                                list_directory(dirname);
+                                break;
+                            default:
+                                fprintf(stderr, "Invalid directory operation.\n");
+                        }
+                    } else {
+                        fprintf(stderr, "Invalid number of arguments for directory operation.\n");
+                    }
+                    break;
+                case 3:  // Keylogger operations mode
+                    if (argc == 4) {
+                        const char *logfile = argv[3];
+                        keylogger(logfile);
+                    } else {
+                        fprintf(stderr, "Invalid number of arguments for keylogger operation.\n");
+                    }
+                    break;
+                default:
+                    fprintf(stderr, "Invalid mode.\n");
             }
             return 0;
         } else {
@@ -63,7 +97,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Interactive menu system
+    // Interactive menu system (for users who prefer a menu-based system)
     while (1) {
         print_menu();
         int choice;
@@ -78,7 +112,7 @@ int main(int argc, char *argv[]) {
                 directory_operations();
                 break;
             case 3:
-                keylogger();
+                keylogger(NULL);  // Start keylogger without a file in interactive mode
                 break;
             case 4:
                 printf("Exiting program.\n");
@@ -249,7 +283,7 @@ void list_directory(const char *dirname) {
     closedir(dir);
 }
 
-void keylogger() {
+void keylogger(const char *logfile) {
     printf("\nKeylogger Demo: Press keys (Press ESC to exit)\n");
 
     struct termios oldt, newt;
@@ -263,7 +297,7 @@ void keylogger() {
     newt.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-    FILE *logFile = fopen("keylog.txt", "a");
+    FILE *logFile = fopen(logfile ? logfile : "keylog.txt", "a");
     if (!logFile) {
         perror("Error opening log file");
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
@@ -275,18 +309,15 @@ void keylogger() {
 
         // Exit on ESC key
         if (ch == 27) {
-            printf("\nExiting keylogger demo.\n");
             break;
         }
 
-        // Print key to console and log to file
-        printf("%c", ch);
+        // Log pressed key to file
         fprintf(logFile, "%c", ch);
-        fflush(logFile);
     }
 
     fclose(logFile);
 
-    // Restore terminal attributes
+    // Restore terminal settings
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-} 
+}
