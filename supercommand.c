@@ -270,6 +270,14 @@ void delete_directory(const char *dirname) {
 }
 
 void list_directory(const char *dirname) {
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working directory: %s\n", cwd);
+    } else {
+        perror("Error getting current working directory");
+        return;
+    }
+
     DIR *dir = opendir(dirname);
     if (!dir) {
         perror("Error opening directory");
