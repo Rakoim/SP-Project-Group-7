@@ -8,6 +8,7 @@
 #include <string.h>
 #include <errno.h>
 #include <termios.h>
+#include <ctype.h>
 
 void print_menu();
 void file_operations();
@@ -97,30 +98,47 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Interactive menu system (for users who prefer a menu-based system)
-    while (1) {
-        print_menu();
-        int choice;
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+while (1) {
+    print_menu();
+    char input[256]; // Buffer to capture user input
+    int choice;
 
-        switch (choice) {
-            case 1:
-                file_operations();
-                break;
-            case 2:
-                directory_operations();
-                break;
-            case 3:
-                keylogger(NULL);  // Start keylogger without a file in interactive mode
-                break;
-            case 4:
-                printf("Exiting program.\n");
-                exit(0);
-            default:
-                printf("Invalid choice. Please try again.\n");
+    printf("Enter your choice: ");
+    scanf("%s", input); // Read input as a string
+
+    // Validate if the input is a valid number
+    int is_number = 1;
+    for (int i = 0; input[i] != '\0'; i++) {
+        if (!isdigit(input[i])) {
+            is_number = 0;
+            break;
         }
     }
+
+    if (!is_number) {
+        printf("Value error: Please enter a valid number.\n");
+        continue; // Restart the loop to prompt the user again
+    }
+
+    choice = atoi(input); // Convert the validated input to an integer
+
+    switch (choice) {
+        case 1:
+            file_operations();
+            break;
+        case 2:
+            directory_operations();
+            break;
+        case 3:
+            keylogger(NULL); // Start keylogger without a file in interactive mode
+            break;
+        case 4:
+            printf("Exiting program.\n");
+            exit(0);
+        default:
+            printf("Invalid choice. Please try again.\n");
+    }
+}
 
     return 0;
 }
@@ -134,17 +152,41 @@ void print_menu() {
 }
 
 void file_operations() {
+
+while(1){
     printf("\nFile Operations:\n");
     printf("1. Create a file\n");
     printf("2. Write to a file\n");
     printf("3. Read a file\n");
     printf("4. Delete a file\n");
+    printf("5. Retrun to Main Menu\n");
 
+    char input[256];
     int choice;
-    char filename[256], content[256];
-    printf("Enter your choice: ");
-    scanf("%d", &choice);
 
+    while (1) { // Loop to handle invalid input
+        printf("Enter your choice: ");
+        scanf("%s", input); // Read input as a string
+
+        // Validate if the input is a valid number
+        int is_number = 1;
+        for (int i = 0; input[i] != '\0'; i++) {
+            if (!isdigit(input[i])) {
+                is_number = 0;
+                break;
+            }
+        }
+
+        if (!is_number) {
+            printf("Value error: Please enter a valid number.\n");
+            continue; // Restart the loop to prompt the user again
+        }
+
+        choice = atoi(input); // Convert the validated input to an integer
+        break; // Exit the loop once valid input is received
+    }
+
+    char filename[256], content[256];
     switch (choice) {
         case 1:
             printf("Enter filename: ");
@@ -168,43 +210,68 @@ void file_operations() {
             scanf("%s", filename);
             delete_file(filename);
             break;
+        case 5:
+            return;
         default:
             printf("Invalid choice.\n");
     }
+}
 }
 
 void directory_operations() {
-    printf("\nDirectory Operations:\n");
-    printf("1. Create a directory\n");
-    printf("2. Delete a directory\n");
-    printf("3. List contents of a directory\n");
-
+    char input[256]; // Use a string to capture input
     int choice;
-    char dirname[256];
-    printf("Enter your choice: ");
-    scanf("%d", &choice);
 
-    switch (choice) {
-        case 1:
-            printf("Enter directory name: ");
-            scanf("%s", dirname);
-            create_directory(dirname);
-            break;
-        case 2:
-            printf("Enter directory name: ");
-            scanf("%s", dirname);
-            delete_directory(dirname);
-            break;
-        case 3:
-            printf("Enter directory name: ");
-            scanf("%s", dirname);
-            list_directory(dirname);
-            break;
-        default:
-            printf("Invalid choice.\n");
+    while (1) { // Keep looping until the user explicitly chooses to return to the main menu
+        printf("\nDirectory Operations:\n");
+        printf("1. Create a directory\n");
+        printf("2. Delete a directory\n");
+        printf("3. List contents of a directory\n");
+        printf("4. Return to Main Menu\n");
+        printf("Enter your choice: ");
+        scanf("%s", input); // Read input as a string
+
+        // Validate that the input is a number
+        int is_number = 1; // Flag to check if the input is a valid number
+        for (int i = 0; input[i] != '\0'; i++) {
+            if (!isdigit(input[i])) {
+                is_number = 0; // Set flag to 0 if a non-digit character is found
+                break;
+            }
+        }
+
+        if (!is_number) {
+            printf("Value error: Please enter a valid number.\n");
+            continue; // Prompt the user again
+        }
+
+        // Convert the valid input to an integer
+        choice = atoi(input);
+
+        switch (choice) {
+            case 1:
+                printf("Enter directory name: ");
+                char dirname[256];
+                scanf("%s", dirname);
+                create_directory(dirname);
+                break;
+            case 2:
+                printf("Enter directory name: ");
+                scanf("%s", dirname);
+                delete_directory(dirname);
+                break;
+            case 3:
+                printf("Enter directory name: ");
+                scanf("%s", dirname);
+                list_directory(dirname);
+                break;
+            case 4:
+                return; // Exit the Directory Operations menu and go back to the main menu
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
     }
 }
-
 void create_file(const char *filename) {
     int fd = open(filename, O_CREAT | O_WRONLY, 0644);
     if (fd == -1) {
@@ -270,6 +337,7 @@ void delete_directory(const char *dirname) {
 }
 
 void list_directory(const char *dirname) {
+
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("Current working directory: %s\n", cwd);
