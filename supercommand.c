@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <termios.h>
 #include <ctype.h>
+#include <signal.h>
+#include <time.h>
 
 void print_menu();
 void file_operations();
@@ -24,32 +26,44 @@ void delete_file(const char *filename);
 
 void create_directory(const char *dirname);
 void delete_directory(const char *dirname);
-void list_directory(const char *dirname);
+void print_current_directory();
+void list_current_directory_contents();
+
+// Signal handler to handle Ctrl+C (SIGINT)
+void handle_sigint(int sig) {
+    printf("\nExecution stopped by user. Exiting...\n");
+    exit(0);
+}
 
 int main(int argc, char *argv[]) {
+    // Register signal handler for SIGINT
+    signal(SIGINT, handle_sigint);
+
     if (argc > 1) {
         // Handle command-line options
         if (strcmp(argv[1], "-m") == 0 && argc >= 4) {
             int mode = atoi(argv[2]);  // Get the operation mode
             switch (mode) {
                 case 1:  // File operations mode
-                    if (argc == 5) {
+                    if (argc >= 5) {
                         int op = atoi(argv[3]);  // Get the file operation type
                         const char *filename = argv[4];
                         switch (op) {
                             case 1:  // Create file
                                 create_file(filename);
                                 break;
-                            case 2:  // Write to file
-                                printf("Enter content to write: ");
-                                char content[256];
-                                scanf("%s", content);
-                                write_file(filename, content);
+                            case 2:  // Change permissions
+                                mode_t mode = strtol(argv[5], NULL, 8);  // Read permissions in octal format
+                                change_permissions(filename, mode);
                                 break;
                             case 3:  // Read file
                                 read_file(filename);
                                 break;
-                            case 4:  // Delete file
+                            case 4:  // Write to file
+                                const char *content = argv[5];  // Content passed for writing
+                                write_file(filename, content);
+                                break;
+                            case 5:  // Delete file
                                 delete_file(filename);
                                 break;
                             default:
@@ -60,7 +74,7 @@ int main(int argc, char *argv[]) {
                     }
                     break;
                 case 2:  // Directory operations mode
-                    if (argc == 5) {
+                    if (argc >= 4) {
                         int op = atoi(argv[3]);  // Get the directory operation type
                         const char *dirname = argv[4];
                         switch (op) {
@@ -70,8 +84,11 @@ int main(int argc, char *argv[]) {
                             case 2:  // Delete directory
                                 delete_directory(dirname);
                                 break;
-                            case 3:  // List directory contents
-                                list_directory(dirname);
+                            case 3:  // Print current directory
+                                print_current_directory();
+                                break;
+                            case 4:  // List current directory contents
+                                list_current_directory_contents();
                                 break;
                             default:
                                 fprintf(stderr, "Invalid directory operation.\n");
@@ -82,8 +99,7 @@ int main(int argc, char *argv[]) {
                     break;
                 case 3:  // Keylogger operations mode
                     if (argc == 4) {
-                        const char *logfile = argv[3];
-                        keylogger(logfile);
+                        keylogger();
                     } else {
                         fprintf(stderr, "Invalid number of arguments for keylogger operation.\n");
                     }
@@ -130,7 +146,7 @@ while (1) {
             directory_operations();
             break;
         case 3:
-            keylogger(NULL); // Start keylogger without a file in interactive mode
+            keylogger();
             break;
         case 4:
             printf("Exiting program.\n");
@@ -147,111 +163,128 @@ void print_menu() {
     printf("\nSuperCommand Menu:\n");
     printf("1. File Operations\n");
     printf("2. Directory Operations\n");
-    printf("3. Keylogger (Demo)\n");
+    printf("3. Keylogger\n");
     printf("4. Exit\n");
 }
 
 void file_operations() {
+    while(1){
+        printf("\nFile Operations:\n");
+        printf("1. Create a file\n");
+        printf("2. Change permissions of a file\n");
+        printf("3. Read a file\n");
+        printf("4. Write to a file\n");
+        printf("5. Delete a file\n");
+        printf("6. Return to Main Menu\n");
 
-while(1){
-    printf("\nFile Operations:\n");
-    printf("1. Create a file\n");
-    printf("2. Write to a file\n");
-    printf("3. Read a file\n");
-    printf("4. Delete a file\n");
-    printf("5. Retrun to Main Menu\n");
+        char input[256];
+        int choice;
 
-    char input[256];
-    int choice;
+        while (1) { // Loop to handle invalid input
+            printf("Enter your choice: ");
+            scanf("%s", input); // Read input as a string
 
-    while (1) { // Loop to handle invalid input
-        printf("Enter your choice: ");
-        scanf("%s", input); // Read input as a string
-
-        // Validate if the input is a valid number
-        int is_number = 1;
-        for (int i = 0; input[i] != '\0'; i++) {
-            if (!isdigit(input[i])) {
-                is_number = 0;
-                break;
+            // Validate if the input is a valid number
+            int is_number = 1;
+            for (int i = 0; input[i] != '\0'; i++) {
+                if (!isdigit(input[i])) {
+                    is_number = 0;
+                    break;
+                }
             }
+
+            if (!is_number) {
+                printf("Value error: Please enter a valid number.\n");
+                continue; // Restart the loop to prompt the user again
+            }
+
+            choice = atoi(input); // Convert the validated input to an integer
+            break; // Exit the loop once valid input is received
         }
 
-        if (!is_number) {
-            printf("Value error: Please enter a valid number.\n");
-            continue; // Restart the loop to prompt the user again
+        char filename[256], content[256];
+        switch (choice) {
+            case 1:
+                printf("Enter filename: ");
+                scanf("%s", filename);
+                create_file(filename);
+                break;
+            case 2:
+                mode_t mode; // Declare mode_t variable
+                printf("Enter filename: ");
+                scanf("%s", filename);
+                printf("Enter permissions (in octal, e.g., 0644): ");
+                scanf("%o", &mode); // Read octal permission input
+                change_permissions(filename, mode);
+                break;
+            case 3:
+                printf("Enter filename: ");
+                scanf("%s", filename);
+                read_file(filename);
+                break;
+            case 4:
+                printf("Enter filename: ");
+                scanf("%s", filename);
+                getchar(); // Clear the newline left by scanf
+                printf("Enter content: ");
+                fgets(content, sizeof(content), stdin);
+                content[strcspn(content, "\n")] = 0; // Remove trailing newline
+                write_file(filename, content);
+                break;
+            case 5:
+                printf("Enter filename: ");
+                scanf("%s", filename);
+                delete_file(filename);
+                break;
+            case 6:
+                return;
+            default:
+                printf("Invalid choice.\n");
         }
-
-        choice = atoi(input); // Convert the validated input to an integer
-        break; // Exit the loop once valid input is received
     }
-
-    char filename[256], content[256];
-    switch (choice) {
-        case 1:
-            printf("Enter filename: ");
-            scanf("%s", filename);
-            create_file(filename);
-            break;
-        case 2:
-            printf("Enter filename: ");
-            scanf("%s", filename);
-            printf("Enter content: ");
-            scanf("%s", content);
-            write_file(filename, content);
-            break;
-        case 3:
-            printf("Enter filename: ");
-            scanf("%s", filename);
-            read_file(filename);
-            break;
-        case 4:
-            printf("Enter filename: ");
-            scanf("%s", filename);
-            delete_file(filename);
-            break;
-        case 5:
-            return;
-        default:
-            printf("Invalid choice.\n");
-    }
-}
 }
 
 void directory_operations() {
-    char input[256]; // Use a string to capture input
-    int choice;
-
     while (1) { // Keep looping until the user explicitly chooses to return to the main menu
         printf("\nDirectory Operations:\n");
         printf("1. Create a directory\n");
         printf("2. Delete a directory\n");
-        printf("3. List contents of a directory\n");
-        printf("4. Return to Main Menu\n");
-        printf("Enter your choice: ");
-        scanf("%s", input); // Read input as a string
+        printf("3. Print current working directory\n");
+        printf("4. List contents of the current directory\n");
+        printf("5. Return to Main Menu\n");
 
-        // Validate that the input is a number
-        int is_number = 1; // Flag to check if the input is a valid number
-        for (int i = 0; input[i] != '\0'; i++) {
-            if (!isdigit(input[i])) {
-                is_number = 0; // Set flag to 0 if a non-digit character is found
-                break;
+        char input[256];
+        int choice;
+
+        while (1) { // Loop to handle invalid input
+            printf("Enter your choice: ");
+            scanf("%s", input); // Read input as a string
+
+            // Validate if the input is a valid number
+            int is_number = 1;
+            for (int i = 0; input[i] != '\0'; i++) {
+                if (!isdigit(input[i])) {
+                    is_number = 0;
+                    break;
+                }
             }
-        }
 
-        if (!is_number) {
-            printf("Value error: Please enter a valid number.\n");
-            continue; // Prompt the user again
+            if (!is_number) {
+                printf("Value error: Please enter a valid number.\n");
+                continue; // Restart the loop to prompt the user again
+            }
+
+            choice = atoi(input); // Convert the validated input to an integer
+            break; // Exit the loop once valid input is received
         }
 
         // Convert the valid input to an integer
         choice = atoi(input);
+        char dirname[256];
 
         switch (choice) {
             case 1:
                 printf("Enter directory name: ");
-                char dirname[256];
                 scanf("%s", dirname);
                 create_directory(dirname);
                 break;
@@ -261,11 +294,12 @@ void directory_operations() {
                 delete_directory(dirname);
                 break;
             case 3:
-                printf("Enter directory name: ");
-                scanf("%s", dirname);
-                list_directory(dirname);
+                print_current_directory();
                 break;
             case 4:
+                list_current_directory_contents();
+                break;
+            case 5:
                 return; // Exit the Directory Operations menu and go back to the main menu
             default:
                 printf("Invalid choice. Please try again.\n");
@@ -282,6 +316,68 @@ void create_file(const char *filename) {
     close(fd);
 }
 
+void change_permissions(const char *filename, mode_t mode) {
+    if (chmod(filename, mode) == -1) {
+        perror("Error changing file permissions");
+    } else {
+        printf("Permissions changed successfully for file: %s\n", filename);
+    }
+}
+
+void read_file(const char *filename) {
+    // Open the file for reading
+    int fd = open(filename, O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening file for reading");
+        return;
+    }
+
+    // Get the file size using fstat
+    struct stat fileStat;
+    if (fstat(fd, &fileStat) == -1) {
+        perror("Error getting file stats");
+        close(fd);
+        return;
+    }
+
+    // Dynamically allocate memory for the buffer based on the file size
+    size_t fileSize = fileStat.st_size;
+    if (fileSize == 0) {
+        printf("The file is empty.\n");
+        close(fd);
+        return;
+    }
+
+    // Allocate memory for the buffer
+    char *buffer = (char *)malloc(fileSize + 1);  // +1 for the null terminator
+    if (buffer == NULL) {
+        perror("Memory allocation failed");
+        close(fd);
+        return;
+    }
+
+    // Read the file into the buffer
+    ssize_t bytesRead = read(fd, buffer, fileSize);
+    if (bytesRead == -1) {
+        perror("Error reading file");
+        free(buffer);
+        close(fd);
+        return;
+    }
+
+    // Null-terminate the buffer
+    buffer[bytesRead] = '\0';
+
+    // Print the content of the file
+    printf("%s", buffer);
+
+    // Clean up: Free the buffer and close the file descriptor
+    free(buffer);
+    close(fd);
+
+    printf("\n");
+}
+
 void write_file(const char *filename, const char *content) {
     int fd = open(filename, O_WRONLY | O_APPEND);
     if (fd == -1) {
@@ -293,22 +389,6 @@ void write_file(const char *filename, const char *content) {
     } else {
         printf("Content written successfully to file: %s\n", filename);
     }
-    close(fd);
-}
-
-void read_file(const char *filename) {
-    int fd = open(filename, O_RDONLY);
-    if (fd == -1) {
-        perror("Error opening file for reading");
-        return;
-    }
-    char buffer[256];
-    ssize_t bytesRead;
-    while ((bytesRead = read(fd, buffer, sizeof(buffer) - 1)) > 0) {
-        buffer[bytesRead] = '\0';
-        printf("%s", buffer);
-    }
-    printf("\n");
     close(fd);
 }
 
@@ -336,31 +416,40 @@ void delete_directory(const char *dirname) {
     }
 }
 
-void list_directory(const char *dirname) {
-
-    char cwd[1024];
+void print_current_directory() {
+    char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("Current working directory: %s\n", cwd);
     } else {
         perror("Error getting current working directory");
+    }
+}
+
+void list_current_directory_contents() {
+    char cwd[PATH_MAX];
+    
+    // Get the current working directory
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        perror("Error getting current directory");
         return;
     }
 
-    DIR *dir = opendir(dirname);
+    DIR *dir = opendir(cwd);
     if (!dir) {
         perror("Error opening directory");
         return;
     }
+
     struct dirent *entry;
-    printf("Contents of directory %s:\n", dirname);
+    printf("Contents of current directory %s:\n", cwd);
     while ((entry = readdir(dir)) != NULL) {
         printf("%s\n", entry->d_name);
     }
     closedir(dir);
 }
 
-void keylogger(const char *logfile) {
-    printf("\nKeylogger Demo: Press keys (Press ESC to exit)\n");
+void keylogger() {
+    printf("\nKeylogger: Press keys (Press ESC to exit)\n");
 
     struct termios oldt, newt;
     char ch;

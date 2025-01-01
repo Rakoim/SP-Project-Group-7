@@ -25,9 +25,10 @@ OPTIONS
         <sub-mode> specifies the sub-operation within the mode:
             For file operations (mode 1):
                 1: Create a file
-                2: Write to a file
+                2: Change permissions of a file
                 3: Read a file
-                4: Delete a file
+                4: Write to a file
+                5: Delete a file
             For directory operations (mode 2):
                 1: Create a directory
                 2: Delete a directory
@@ -42,43 +43,47 @@ OPTIONS
 
 EXAMPLES
     1. File operation example: Create a file
-        $ supercommand -m 1 1 myfile.txt
+        $ ./supercommand -m 1 1 myfile.txt
         Description: Creates a file named `myfile.txt`.
-
-    2. File operation example: Write to a file
-        $ supercommand -m 1 2 myfile.txt "Hello, World!"
-        Description: Writes "Hello, World!" to the file `myfile.txt`.
+    
+    2. File operation example: Change file permissions
+        $ ./supercommand -m 1 2 myfile.txt 0755
+        Description: Changes the permissions of `myfile.txt` to `0755` (rwxr-xr-x).
 
     3. File operation example: Read a file
-        $ supercommand -m 1 3 myfile.txt
+        $ ./supercommand -m 1 3 myfile.txt
         Description: Reads and displays the content of `myfile.txt`.
+    
+    4. File operation example: Write to a file
+        $ ./supercommand -m 1 4 myfile.txt "Hello, World!"
+        Description: Writes "Hello, World!" to the file `myfile.txt`.
 
-    4. File operation example: Delete a file
-        $ supercommand -m 1 4 myfile.txt
+    5. File operation example: Delete a file
+        $ ./supercommand -m 1 5 myfile.txt
         Description: Deletes the file `myfile.txt`.
 
-    5. Directory operation example: Create a directory
-        $ supercommand -m 2 1 newdir
+    6. Directory operation example: Create a directory
+        $ ./supercommand -m 2 1 newdir
         Description: Creates a directory named `newdir`.
 
-    6. Directory operation example: Delete a directory
-        $ supercommand -m 2 2 newdir
+    7. Directory operation example: Delete a directory
+        $ ./supercommand -m 2 2 newdir
         Description: Deletes the directory `newdir`.
 
-    7. Directory operation example: List contents of a directory
-        $ supercommand -m 2 3 /path/to/directory
+    8. Directory operation example: List contents of a directory
+        $ ./supercommand -m 2 3 /path/to/directory
         Description: Lists the contents of the specified directory.
 
-    8. Keylogger operation example: Start keylogger
-        $ supercommand -m 3 1 keylog.txt
+    9. Keylogger operation example: Start keylogger
+        $ ./supercommand -m 3 1 keylog.txt
         Description: Starts the keylogger and logs key presses to the file `keylog.txt`.
 
-    9. Keylogger operation example: Start keylogger without specifying a file
-        $ supercommand -m 3 1
+    10. Keylogger operation example: Start keylogger without specifying a file
+        $ ./supercommand -m 3 1
         Description: Starts the keylogger and logs key presses to the default file.
 
-    10. Interactive mode: Run the program with a menu
-        $ supercommand
+    11. Interactive mode: Run the program with a menu
+        $ ./supercommand
         Description: Runs the program in interactive mode, where the user is prompted to select operations via a menu.
 
 EXIT STATUS
