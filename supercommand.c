@@ -453,6 +453,9 @@ void keylogger() {
 
     struct termios oldt, newt;
     char ch;
+    //adding timestamp variable
+    time_t now;
+    struct tm *local_time;
 
     // Get current terminal attributes
     tcgetattr(STDIN_FILENO, &oldt);
@@ -470,6 +473,17 @@ void keylogger() {
     if (!logFile) {
         perror("Error opening log file");
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+        return;
+    }
+
+    //adding timestamp to the beginning of the file 
+    time(&now);
+    local_time = localtime(&now);
+    char timestamp[64];
+    strftime(timestamp, sizeof(timestamp), "Starting keylogging session: %Y-%m-%d %H:%M:%S\n", local_time);
+    if(fwrite(timestamp, sizeof(char), strlen(timestamp), logFile) != strlen(timestamp)) {
+        perror ("Error writing timestamp to keylog.txt");
+        fclose(logFile);
         return;
     }
 
