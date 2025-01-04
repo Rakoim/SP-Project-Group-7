@@ -7,6 +7,12 @@ The program can be run in two modes:
 1. Command-line mode (using the `-m` flag)
 2. Interactive menu mode (without the `-m` flag)
 
+## COMPILATION
+To compile the program, place all the files in a directory (avoid using a shared folder due to potential permission issues) and run the following command:
+```sh
+gcc supercommand.c -o supercommand
+```
+
 ## OPTIONS
 `-m <mode> <sub-mode> <parameters>`
 Run the program in command-line mode with specific operation types.
@@ -107,3 +113,5 @@ Run the program in command-line mode with specific operation types.
     $ ./supercommand -m 3 2
     ```
     Description: Shows the contents of the `keylog.txt` file.
+
+---
