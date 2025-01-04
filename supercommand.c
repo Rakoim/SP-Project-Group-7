@@ -523,7 +523,7 @@ void check_root_user()
 {
     if (getuid())
     {
-        printf("\nPlease run it as root\n");
+        printf("\nPlease run it as sudo\n");
         exit(1);
     }
 }
