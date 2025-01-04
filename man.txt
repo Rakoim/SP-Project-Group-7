@@ -1,94 +1,98 @@
-SUPERCOMMAND(1)                       User Commands                       SUPERCOMMAND(1)
-
+Supercommand
 NAME
-    supercommand - A command-line utility for file, directory, and keylogger operations.
+supercommand - A command-line utility for file, directory, and keylogger operations.
 
 SYNOPSIS
-    supercommand [-m <mode> <sub-mode> <parameters>]
-
+supercommand [-m <mode> <sub-mode> <parameters>]
 DESCRIPTION
-    supercommand provides a set of operations for file management, directory management, and keylogging.
+supercommand provides a set of operations for file management, directory management, and keylogging.
 
-    The program can be run in two modes:
-    1. Command-line mode (using the -m flag)
-    2. Interactive menu mode (without -m flag)
+The program can be run in two modes:
 
+Command-line mode (using the -m flag)
+Interactive menu mode (without the -m flag)
 OPTIONS
-    -m <mode> <sub-mode> <parameters>
-        Run the program in command-line mode with specific operation types.
-        
-        <mode> specifies the type of operation:
-            1: File operations
-            2: Directory operations
-            3: Keylogger operations
-            
-        <sub-mode> specifies the sub-operation within the mode:
-            For file operations (mode 1):
-                1: Create a file
-                2: Change permissions of a file
-                3: Read a file
-                4: Write to a file
-                5: Delete a file
-            For directory operations (mode 2):
-                1: Create a directory
-                2: Delete a directory
-                3: List contents of a directory
-            For keylogger operations (mode 3):
-                1: Start keylogger (logs key presses to a file)
+-m <mode> <sub-mode> <parameters> Run the program in command-line mode with specific operation types.
 
-    <parameters> depend on the operation mode and sub-mode:
-        - For file operations, provide the filename and content (if writing).
-        - For directory operations, provide the directory name.
-        - For keylogger operations, provide the logfile name (optional).
+Modes and Sub-modes:
+File operations (mode 1):
 
+1: Create a file
+2: Change permissions of a file
+3: Read a file
+4: Write to a file
+5: Delete a file
+Directory operations (mode 2):
+
+1: Create a directory
+2: Delete a directory
+3: Print current working directory
+4: List contents of the current directory
+Keylogger operations (mode 3):
+
+1: Start keylogger (logs keys pressed to keylog.txt)
+2: View keylogger contents (keylog.txt)
+Parameters:
+For file operations, provide the filename and content (if writing).
+For directory operations, provide the directory name.
+For keylogger operations, provide the logfile name (optional).
 EXAMPLES
-    1. File operation example: Create a file
-        $ ./supercommand -m 1 1 myfile.txt
-        Description: Creates a file named `myfile.txt`.
-    
-    2. File operation example: Change file permissions
-        $ ./supercommand -m 1 2 myfile.txt 0755
-        Description: Changes the permissions of `myfile.txt` to `0755` (rwxr-xr-x).
+Interactive mode: Run the program with a menu
 
-    3. File operation example: Read a file
-        $ ./supercommand -m 1 3 myfile.txt
-        Description: Reads and displays the content of `myfile.txt`.
-    
-    4. File operation example: Write to a file
-        $ ./supercommand -m 1 4 myfile.txt "Hello, World!"
-        Description: Writes "Hello, World!" to the file `myfile.txt`.
+$ ./supercommand
+Description: Runs the program in interactive mode, where the user is prompted to select operations via a menu.
 
-    5. File operation example: Delete a file
-        $ ./supercommand -m 1 5 myfile.txt
-        Description: Deletes the file `myfile.txt`.
+File operation example: Create a file
 
-    6. Directory operation example: Create a directory
-        $ ./supercommand -m 2 1 newdir
-        Description: Creates a directory named `newdir`.
+$ ./supercommand -m 1 1 myfile.txt
+Description: Creates a file named myfile.txt.
 
-    7. Directory operation example: Delete a directory
-        $ ./supercommand -m 2 2 newdir
-        Description: Deletes the directory `newdir`.
+File operation example: Change file permissions
 
-    8. Directory operation example: List contents of a directory
-        $ ./supercommand -m 2 3 /path/to/directory
-        Description: Lists the contents of the specified directory.
+$ ./supercommand -m 1 2 myfile.txt 0755
+Description: Changes the permissions of myfile.txt to 0755 (rwxr-xr-x).
 
-    9. Keylogger operation example: Start keylogger
-        $ ./supercommand -m 3 1 keylog.txt
-        Description: Starts the keylogger and logs key presses to the file `keylog.txt`.
+File operation example: Read a file
 
-    10. Keylogger operation example: Start keylogger without specifying a file
-        $ ./supercommand -m 3 1
-        Description: Starts the keylogger and logs key presses to the default file.
+$ ./supercommand -m 1 3 myfile.txt
+Description: Reads and displays the content of myfile.txt.
 
-    11. Interactive mode: Run the program with a menu
-        $ ./supercommand
-        Description: Runs the program in interactive mode, where the user is prompted to select operations via a menu.
+File operation example: Write to a file
 
-EXIT STATUS
-    0  Success
-    1  Invalid command or arguments
+$ ./supercommand -m 1 4 myfile.txt "Hello, World!"
+Description: Writes "Hello, World!" to the file myfile.txt.
 
-SEE ALSO
-    man 2 open, man 3 read, man 3 write, man 1 rmdir, man 3 termios
+File operation example: Delete a file
+
+$ ./supercommand -m 1 5 myfile.txt
+Description: Deletes the file myfile.txt.
+
+Directory operation example: Create a directory
+
+$ ./supercommand -m 2 1 newdir
+Description: Creates a directory named newdir.
+
+Directory operation example: Delete a directory
+
+$ ./supercommand -m 2 2 newdir
+Description: Deletes the directory newdir.
+
+Directory operation example: Print current working directory
+
+$ ./supercommand -m 2 3
+Description: Prints the current working directory to the terminal.
+
+Directory operation example: List contents of the current directory
+
+$ ./supercommand -m 2 4
+Description: Lists the contents of the current working directory.
+
+Keylogger operation example: Start keylogger
+
+$ sudo ./supercommand -m 3 1
+To stop keylogging, press ALT+CTRL+SHIFT+ESC keys together from anywhere. Description: Starts the keylogger and logs keys pressed from the keyboard anywhere (text file, browser, etc.) to the file keylog.txt. Note: Must be run with sudo.
+
+Keylogger operation example: View keylogger contents
+
+$ ./supercommand -m 3 2
+Description: Shows the contents of the keylog.txt file.
