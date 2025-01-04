@@ -1,15 +1,7 @@
 # Supercommand
 
-## NAME
-**supercommand** - A command-line utility for file, directory, and keylogger operations.
-
-## SYNOPSIS
-```sh
-supercommand [-m <mode> <sub-mode> <parameters>]
-```
-
 ## DESCRIPTION
-**supercommand** provides a set of operations for file management, directory management, and keylogging.
+**supercommand** is a C program that provides a set of operations for file management, directory management, and keylogging in Linux.
 
 The program can be run in two modes:
 1. Command-line mode (using the `-m` flag)
@@ -40,7 +32,6 @@ Run the program in command-line mode with specific operation types.
 ### Parameters:
 - For file operations, provide the filename and content (if writing).
 - For directory operations, provide the directory name.
-- For keylogger operations, provide the logfile name (optional).
 
 ## EXAMPLES
 
