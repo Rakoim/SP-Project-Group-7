@@ -44,50 +44,51 @@ Run the program in command-line mode with specific operation types.
 1. **Interactive mode: Run the program with a menu**
     ```sh
     $ ./supercommand
+    $ sudo ./supercommand (sudo is required for starting keylogger)
     ```
     Description: Runs the program in interactive mode, where the user is prompted to select operations via a menu.
 
 2. **File operation example: Create a file**
     ```sh
-    $ ./supercommand -m 1 1 myfile.txt
+    $ ./supercommand -m 1 1 /path/to/file/myfile.txt
     ```
-    Description: Creates a file named `myfile.txt`.
+    Description: Creates a file named `myfile.txt` at the specified path.
 
 3. **File operation example: Change file permissions**
     ```sh
-    $ ./supercommand -m 1 2 myfile.txt 0755
+    $ ./supercommand -m 1 2 /path/to/file/myfile.txt 0755
     ```
-    Description: Changes the permissions of `myfile.txt` to `0755` (rwxr-xr-x).
+    Description: Changes the permissions of `myfile.txt` to `0755` (rwxr-xr-x) at the specified path.
 
 4. **File operation example: Read a file**
     ```sh
-    $ ./supercommand -m 1 3 myfile.txt
+    $ ./supercommand -m 1 3 /path/to/file/myfile.txt
     ```
-    Description: Reads and displays the content of `myfile.txt`.
+    Description: Reads and displays the content of `myfile.txt` from the specified path.
 
 5. **File operation example: Write to a file**
     ```sh
-    $ ./supercommand -m 1 4 myfile.txt "Hello, World!"
+    $ ./supercommand -m 1 4 /path/to/file/myfile.txt "Hello, World!"
     ```
-    Description: Writes "Hello, World!" to the file `myfile.txt`.
+    Description: Writes "Hello, World!" to the file `myfile.txt` at the specified path.
 
 6. **File operation example: Delete a file**
     ```sh
-    $ ./supercommand -m 1 5 myfile.txt
+    $ ./supercommand -m 1 5 /path/to/file/myfile.txt
     ```
-    Description: Deletes the file `myfile.txt`.
+    Description: Deletes the file `myfile.txt` at the specified path.
 
 7. **Directory operation example: Create a directory**
     ```sh
-    $ ./supercommand -m 2 1 newdir
+    $ ./supercommand -m 2 1 /path/to/directory/newdir
     ```
-    Description: Creates a directory named `newdir`.
+    Description: Creates a directory named `newdir` at the specified path.
 
 8. **Directory operation example: Delete a directory**
     ```sh
-    $ ./supercommand -m 2 2 newdir
+    $ ./supercommand -m 2 2 /path/to/directory/newdir
     ```
-    Description: Deletes the directory `newdir`.
+    Description: Deletes the directory `newdir` from the specified path.
 
 9. **Directory operation example: Print current working directory**
     ```sh

